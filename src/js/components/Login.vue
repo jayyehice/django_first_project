@@ -1,0 +1,78 @@
+<template>
+    <v-container fluid fill-height>
+        <v-layout align-center justify-center>
+            <v-flex xs12 sm8 md4>
+                <v-card class="elevation-12">
+                    <v-toolbar dark>
+                        <v-toolbar-title>Login</v-toolbar-title>
+                    </v-toolbar>
+                    <v-card-text>
+                        <v-form>
+                            <v-text-field v-model="email" label="Account" type="text"></v-text-field>
+                            <v-text-field v-model="password" label="Password" type="password"></v-text-field>
+                        </v-form>
+                    </v-card-text>
+                    <v-card-actions class="d-flex flex-wrap">
+                        <h5 v-if="hint != ''" class="red--text text--lighten">{{hint}}</h5>
+                        <v-btn @click="login" color="#BDBDBD" block>Login</v-btn>
+                        <v-divider class="ma-8"></v-divider>
+                        <v-btn block to="/register">register</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-flex>
+        </v-layout>
+    </v-container>
+</template>
+
+<script>
+import axios from 'axios';
+
+export default {
+    data: () => ({
+        email: '',
+        password: '',
+        hint: '',
+    }),
+    methods: {
+        login() {
+            if (this.email == '' || this.password == '') {
+                this.hint = '請填寫帳號或密碼';
+            } else {
+                axios
+                    .post(
+                        'user/login',
+                        {
+                            email: this.email,
+                            password: this.password,
+                        },
+                        {
+                            headers: {
+                                'X-CSRF-TOKEN': document.head.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            },
+                        }
+                    )
+                    .catch((error) => {
+                        let message = JSON.parse(error.request.response);
+                        let hint = '';
+                        Object.values(message.errors).forEach((error) => {
+                            hint += error;
+                        });
+                        this.hint = hint;
+                    })
+                    .then((response) => {
+                        if (response.data.success) {
+                            location.href = '/personalManage';
+                        } else {
+                            this.hint = response.data.message;
+                        }
+                    });
+            }
+        },
+    },
+    created() {
+        axios.get('/user/loginStatus').then((response) => {
+            response.data.status && history.go(-1);
+        });
+    },
+};
+</script>

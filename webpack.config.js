@@ -4,7 +4,7 @@ module.exports = {
     entry: "./src/js/app.js",
     output: {
         path: __dirname,
-        filename: "./templates/js/bundle.js"
+        filename: "./static/js/bundle.js"
     },
     module: {
         rules: [
@@ -20,12 +20,10 @@ module.exports = {
                     'css-loader',
                     {
                         loader: 'sass-loader',
-                        // Requires sass-loader@^7.0.0
                         options: {
                             implementation: require('sass'),
                             indentedSyntax: true // optional
                         },
-                        // Requires >= sass-loader@^8.0.0
                         options: {
                             implementation: require('sass'),
                             sassOptions: {

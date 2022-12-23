@@ -1,2 +1,3 @@
 node_modules
 templates/js/bundle.js
+static/js/bundle.js
